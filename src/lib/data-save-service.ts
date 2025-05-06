@@ -4,12 +4,14 @@ import { PGlite } from "@electric-sql/pglite";
 export class PatientDataSaveService {
 
     private db: PGlite & Record<string, never>
+    private isInitialized = false;
     constructor() {
     }
 
     async init() {
         await new Promise(resolve => setTimeout(resolve, 100));
         this.db = await this.createDb();
+        this.isInitialized = true;
     }
 
     async createDb() {
@@ -39,9 +41,24 @@ export class PatientDataSaveService {
     }
 
     async getAllPatientsFromDb(): Promise<Patient[]> {
-        const result: DbPatients = await this.db.query('SELECT * FROM patients ORDER BY createdAt DESC');
-        console.log("*************************Rows", result.rows);
-        return result.rows;
+        try {
+          // Explicit transaction with retry
+          let retries = 3;
+          while (retries > 0) {
+            try {
+              const result: DbPatients = await this.db.query('SELECT * FROM patients');
+              return result.rows;
+            } catch (error) {
+              retries--;
+              if (retries === 0) throw error;
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+          }
+          return [];
+        } catch (error) {
+          console.error("Database query failed:", error);
+          throw error;
+        }
     }
 
     async queryDb(sql: string) {
@@ -50,7 +67,11 @@ export class PatientDataSaveService {
     }
 
     async savePatient(patient: Patient) {
+        if (!this.isInitialized) {
+            await this.init();
+        }
         try {
+            await this.db.query('BEGIN');
             await this.db.query(
                 `INSERT INTO patients (
               id,
@@ -75,9 +96,11 @@ export class PatientDataSaveService {
                     patient.createdAt
                 ]
             );
+            await this.db.query('COMMIT');
             console.log(`Patient ${patient.firstName} ${patient.lastName} inserted`);
         } catch (error) {
             console.error('Error inserting patient:', error);
+            await this.db.query('ROLLBACK');
             throw error;
         }
     }
