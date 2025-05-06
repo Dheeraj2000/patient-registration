@@ -69,39 +69,38 @@ class PatientDataService {
 
   private async loadFromStorage(broadcast = true): Promise<void> {
     try {
-      this.patients = await this.dataSaveService.getAllPatientsFromDb();
-      this.initialized = true;
+      const loadedpatients: Patient[] = await this.dataSaveService.getAllPatientsFromDb();
+      this.patients = loadedpatients || [];
       if (broadcast) {
         this.broadcastUpdate();
       }
+      window.dispatchEvent(new CustomEvent("patients-updated"));
       this.notifyListeners();
-      const event = new CustomEvent("patients-updated", { // doubt
-        detail: { timestamp: new Date().getTime() }
-      });
-      window.dispatchEvent(event);
     } catch (error) {
       console.error("Error loading data from storage:", error);
+      this.patients = [];
+    } finally {
       this.initialized = true;
     }
   }
 
   private async saveToStorage(newPatient: Patient): Promise<void> {
     if (this.isSaving) {
-      console.warn("pls save again")
+      console.warn("Save in progress, please try again");
       return;
     }
     this.isSaving = true;
+    
     try {
       await this.dataSaveService.savePatient(newPatient);
-      const abc = await this.dataSaveService.getAllPatientsFromDb();
-      console.log("**************************abc", abc)
+      this.patients = await this.dataSaveService.getAllPatientsFromDb();
       this.broadcastUpdate();
-      const event = new CustomEvent("patients-updated", {
-        detail: { timestamp: new Date().getTime() }
-      });
-      window.dispatchEvent(event);
+      window.dispatchEvent(new CustomEvent("patients-updated"));
+      this.notifyListeners();
+      
     } catch (error) {
-      console.error("Error saving data to storage:", error);
+      console.error("Error saving data:", error);
+      throw error;
     } finally {
       this.isSaving = false;
     }
@@ -114,7 +113,10 @@ class PatientDataService {
     localStorage.setItem(this.storageKey, Date.now().toString());
   }
 
-  public getAllPatients(): Patient[] {
+  public async getAllPatients(): Promise<Patient[]> {
+    if (!this.initialized) {
+      await this.init();
+    }
     return [...this.patients];
   }
 
