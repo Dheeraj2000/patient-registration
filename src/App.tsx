@@ -7,6 +7,7 @@ import { DatabaseProvider } from "@/components/database-provider";
 import NotFound from "./pages/not-found";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
+import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
+              <Route path="register" element={<Register />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
