@@ -1,10 +1,12 @@
 import { DbPatients, Patient } from "@/types/patient";
-import { PGlite } from "@electric-sql/pglite";
+import { PGliteWorker } from '@electric-sql/pglite/worker';
+
 
 export class PatientDataSaveService {
 
-    private db: PGlite & Record<string, never>
+    private db: PGliteWorker
     private isInitialized = false;
+
     constructor() {
     }
 
@@ -17,7 +19,10 @@ export class PatientDataSaveService {
     async createDb() {
         try {
             console.log('Initializing database...');
-            const db = await PGlite.create({ dataDir: 'idb://patients.db' });
+            const worker = new Worker(new URL('./pglite-worker.ts', import.meta.url), {
+                type: 'module',
+            });
+            const db = new PGliteWorker(worker);
             await db.exec(`
               CREATE TABLE IF NOT EXISTS patients (
                 id TEXT PRIMARY KEY,
@@ -41,20 +46,9 @@ export class PatientDataSaveService {
     }
 
     async getAllPatientsFromDb(): Promise<Patient[]> {
-        try {
-          // Explicit transaction with retry
-          let retries = 3;
-          while (retries > 0) {
-            try {
-              const result: DbPatients = await this.db.query('SELECT * FROM patients');
-              return result.rows;
-            } catch (error) {
-              retries--;
-              if (retries === 0) throw error;
-              await new Promise(resolve => setTimeout(resolve, 50));
-            }
-          }
-          return [];
+        try {    
+            const result: DbPatients = await this.db.query('SELECT * FROM patients');
+            return result.rows;
         } catch (error) {
           console.error("Database query failed:", error);
           throw error;
