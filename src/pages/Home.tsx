@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import { PatientList } from "@/components/patient-list";
 
 export default function Home() {
   return (
@@ -13,7 +14,7 @@ export default function Home() {
           Register New Patient
         </Link>
       </div>
-
+      <PatientList />
     </div>
   );
 }
