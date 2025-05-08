@@ -13,6 +13,9 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     exclude: ['@electric-sql/pglite']
   },
+  worker: {
+    format: 'es',
+  },
   build: {
     commonjsOptions: {
       include: [/@electric-sql\/pglite/, /node_modules/]
