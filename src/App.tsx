@@ -8,6 +8,7 @@ import NotFound from "./pages/not-found";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
 import Register from "./pages/Register";
+import Query from "./pages/Query";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="register" element={<Register />} />
+              <Route path="query" element={<Query />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
