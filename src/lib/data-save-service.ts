@@ -26,14 +26,16 @@ export class PatientDataSaveService {
             await db.exec(`
               CREATE TABLE IF NOT EXISTS patients (
                 id TEXT PRIMARY KEY,
-                firstName TEXT NOT NULL,
-                lastName TEXT NOT NULL,
-                dateOfBirth TEXT NOT NULL,
+                first_name TEXT NOT NULL,
+                last_name TEXT NOT NULL,
+                date_of_birth BIGINT NOT NULL,
                 gender TEXT NOT NULL,
                 email TEXT,
                 phone TEXT,
                 address TEXT,
-                createdAt TEXT NOT NULL
+                created_at BIGINT NOT NULL,
+                updated_at BIGINT NOT NULL,
+                schema TEXT NOT NULL
               );
             `);
 
@@ -69,29 +71,33 @@ export class PatientDataSaveService {
             await this.db.query(
                 `INSERT INTO patients (
               id,
-              firstName,
-              lastName,
-              dateOfBirth,
+              first_name,
+              last_name,
+              date_of_birth,
               gender,
               email,
               phone,
               address,
-              createdAt
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+              created_at,
+              updated_at,
+              schema
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
                 [
                     patient.id,
-                    patient.firstName,
-                    patient.lastName,
-                    patient.dateOfBirth,
+                    patient.first_name,
+                    patient.last_name,
+                    patient.date_of_birth,
                     patient.gender,
                     patient.email,
                     patient.phone,
                     patient.address,
-                    patient.createdAt
+                    patient.created_at,
+                    patient.updated_at,
+                    patient.schema
                 ]
             );
             await this.db.query('COMMIT');
-            console.log(`Patient ${patient.firstName} ${patient.lastName} inserted`);
+            console.log(`Patient ${patient.first_name} ${patient.last_name} inserted`);
         } catch (error) {
             console.error('Error inserting patient:', error);
             await this.db.query('ROLLBACK');

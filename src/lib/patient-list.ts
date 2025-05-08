@@ -38,5 +38,6 @@ export function usePatients() {
         unsubscribe();
       };
     }, []);
+    console.log("*********************************", patients)
     return { patients, loading, error, refetch: fetchPatients };
   }

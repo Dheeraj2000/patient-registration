@@ -57,10 +57,10 @@ export function PatientList() {
           <div className="flex justify-between">
             <div>
               <h3 className="font-medium text-lg">
-                {patient.firstName} {patient.lastName}
+                {patient.first_name} {patient.last_name}
               </h3>
               <p className="text-sm text-gray-500">
-                DOB: {new Date(patient.dateOfBirth).toLocaleDateString()} | {patient.gender}
+                DOB: {new Date(patient.date_of_birth).toLocaleDateString()} | {patient.gender}
               </p>
               {patient.email && <p className="text-sm">Email: {patient.email}</p>}
               {patient.phone && <p className="text-sm">Phone: {patient.phone}</p>}
@@ -72,7 +72,7 @@ export function PatientList() {
             </div>
           )}
           <div className="mt-2 text-xs text-gray-400">
-            Registered on: {new Date(patient.createdAt).toLocaleString()}
+            Registered on: {new Date(patient.created_at).toLocaleDateString()}
           </div>
         </div>
       ))}

@@ -4,9 +4,9 @@ import { toast } from "@/hooks/use-toast";
 import { registerPatient } from "@/lib/patient-registration";
 
 interface PatientFormValues {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: number;
   gender: string;
   email: string;
   phone: string;
@@ -21,7 +21,7 @@ export function PatientRegistrationForm() {
       await registerPatient(data);
       toast({
         title: "Patient Registered",
-        description: `Successfully registered ${data.firstName} ${data.lastName}`,
+        description: `Successfully registered ${data.first_name} ${data.last_name}`,
       });
       reset();
     } catch (error) {
@@ -38,47 +38,47 @@ export function PatientRegistrationForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label htmlFor="firstName" className="text-sm font-medium">
+          <label htmlFor="first_name" className="text-sm font-medium">
             First Name
           </label>
           <input
-            id="firstName"
+            id="first_name"
             type="text"
-            {...register("firstName", { required: "First name is required" })}
+            {...register("first_name", { required: "First name is required" })}
             className="w-full p-2 border rounded-md"
           />
-          {errors.firstName && (
-            <p className="text-sm text-red-500">{errors.firstName.message}</p>
+          {errors.first_name && (
+            <p className="text-sm text-red-500">{errors.first_name.message}</p>
           )}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="lastName" className="text-sm font-medium">
+          <label htmlFor="last_name" className="text-sm font-medium">
             Last Name
           </label>
           <input
-            id="lastName"
+            id="last_name"
             type="text"
-            {...register("lastName", { required: "Last name is required" })}
+            {...register("last_name", { required: "Last name is required" })}
             className="w-full p-2 border rounded-md"
           />
-          {errors.lastName && (
-            <p className="text-sm text-red-500">{errors.lastName.message}</p>
+          {errors.last_name && (
+            <p className="text-sm text-red-500">{errors.last_name.message}</p>
           )}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="dateOfBirth" className="text-sm font-medium">
+          <label htmlFor="date_of_birth" className="text-sm font-medium">
             Date of Birth
           </label>
           <input
-            id="dateOfBirth"
+            id="date_of_birth"
             type="date"
-            {...register("dateOfBirth", { required: "Date of birth is required" })}
+            {...register("date_of_birth", { required: "Date of birth is required" })}
             className="w-full p-2 border rounded-md"
           />
-          {errors.dateOfBirth && (
-            <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>
+          {errors.date_of_birth && (
+            <p className="text-sm text-red-500">{errors.date_of_birth.message}</p>
           )}
         </div>
 
